@@ -23,7 +23,9 @@ jobs:
 
       - name: Run tests
         run: npm test
-       
+        env:
+          REDIS_URL: ${{ secrets.REDIS_URL }}
+          MONGO_URI: ${{ secrets.MONGO_URI }}
 
   # ── Job 2: Deploy (only if tests passed) ─────────
   deploy:
