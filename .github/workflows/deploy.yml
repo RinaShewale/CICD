@@ -10,12 +10,36 @@ jobs:
   test:
     name: Run Tests
     runs-on: ubuntu-latest
+
+    services:
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
-        with: { node-version: '20', cache: 'npm' }
-      - run: npm install
-      - run: npm test
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
+        env:
+          NODE_ENV: test
+          REDIS_URL: redis://localhost:6379
+          MONGO_URL: ${{ secrets.MONGO_URL }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
 
   # ── Job 2: Deploy (only if tests passed) ─────────
   deploy:
@@ -27,9 +51,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Deploy to Render / Railway / VPS
+      - name: Deploy to Render
         run: |
-     
-          curl -X POST "https://api.render.com/deploy/srv-d9ks7brm8hqs738p14n0?key=NCT8t5QKJYg"
-
-     
+          curl -X POST "https://api.render.com/deploy/srv-d9ks7brm8hqs738p14n0?key=${{ secrets.RENDER_DEPLOY_KEY }}"
