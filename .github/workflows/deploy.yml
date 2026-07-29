@@ -12,20 +12,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run tests
-        run: npm test
-        env:
-          REDIS_URL: ${{ secrets.REDIS_URL }}
-          MONGO_URI: ${{ secrets.MONGO_URI }}
+        with: { node-version: '20', cache: 'npm' }
+      - run: npm install
+      - run: npm test
 
   # ── Job 2: Deploy (only if tests passed) ─────────
   deploy:
@@ -37,6 +27,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Deploy to Render
+      - name: Deploy to Render / Railway / VPS
         run: |
-          curl -X POST "https://api.render.com/deploy/srv-d9ks7brm8hqs738p14n0?key=${{ secrets.RENDER_DEPLOY_KEY }}"
+     
+          curl -X POST "https://api.render.com/deploy/srv-d9ks7brm8hqs738p14n0?key=NCT8t5QKJYg"
+
+     
